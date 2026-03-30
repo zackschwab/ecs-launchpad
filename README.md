@@ -11,6 +11,7 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 - **Modular Terraform**: each AWS resource is separated into reusable modules, making infrastructure easier to maintain and extend
 - **Multi-stage Docker build**: drastically reduces image size, separates build dependencies from the runtime image, and reduces attack surface
 - **CloudWatch Container Insights**: monitors CPU and memory at the task and service level using native AWS tooling
+- **OIDC Federation**: GitHub Actions assumes a scoped IAM role via short-lived token, removing the need to store credentials
 
 ## Tech Stack
 
@@ -31,9 +32,8 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 - AWS CLI configured with appropriate permissions
 - Terraform >= 1.14.8
 - Docker
-- GitHub repository with the following secrets set:
-  - `AWS_ACCESS_KEY_ID`
-  - `AWS_SECRET_ACCESS_KEY`
+- GitHub repository with the following variables set:
+  - `AWS_ROLE_ARN`
   - `AWS_REGION`
 
 ## Roadmap
@@ -44,6 +44,7 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 - [ ] FastAPI application
 - [ ] Dockerfile
 ### Core Infrastructure
+- [ ] Terraform bootstrap module
 - [ ] Terraform VPC module
 - [ ] Terraform ECR module
 - [ ] Terraform ECS module
