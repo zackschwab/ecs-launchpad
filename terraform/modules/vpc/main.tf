@@ -20,8 +20,8 @@ locals {
 
 # Create the VPC for our deployment with the provided cidr block
 resource "aws_vpc" "this" {
-  cidr_block           = var.vpc_cidr
-  
+  cidr_block = var.vpc_cidr
+
   # VPC endpoints require DNS support to be enabled
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -33,15 +33,15 @@ resource "aws_vpc" "this" {
 
 # Create az_count public subnets
 resource "aws_subnet" "public" {
-    # More than one AZ provides higher availability
+  # More than one AZ provides higher availability
   count = var.az_count
 
-  vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = local.azs[count.index]
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.public_subnet_cidrs[count.index]
+  availability_zone = local.azs[count.index]
 
   # ALB requires public IPs in each AZ to accept internet traffic
-  map_public_ip_on_launch = true 
+  map_public_ip_on_launch = true
 
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-${var.environment}-public-${count.index + 1}"
