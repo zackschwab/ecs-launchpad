@@ -23,7 +23,7 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 | Container Registry | AWS ECR |
 | Infrastructure-as-Code | Terraform |
 | CI/CD | GitHub Actions |
-| Networking | AWS VPC, ALB, Security Groups |
+| Networking | AWS VPC, ALB, IGW, VPC Endpoints, Security Groups |
 | Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
 | Secrets | AWS Secrets Manager |
 
@@ -61,7 +61,8 @@ The `backend_config` output will be needed to configure the remote backend for t
 - [x] Dockerfile
 ### Core Infrastructure
 - [x] Terraform bootstrap module
-- [ ] Terraform VPC module
+- [x] Terraform VPC module
+- [ ] Terraform VPC Endpoints module
 - [ ] Terraform ECR module
 - [ ] Terraform ECS module
 - [ ] Terraform ALB module
