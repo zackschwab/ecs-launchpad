@@ -36,15 +36,31 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
   - `AWS_ROLE_ARN`
   - `AWS_REGION`
 
+## Deployment 
+### 1. Bootstrap Remote State (one time setup)
+
+Before deploying any infrastructure, you need to provision the S3 bucket 
+and DynamoDB table used for Terraform remote state.
+
+```bash
+cd terraform/bootstrap
+cp terraform.tfvars.example terraform.tfvars  # edit values if needed
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+
+The `backend_config` output will be needed to configure the remote backend for the infrastructure modules.
+
 ## Roadmap
 
 ### Planning stage
 - [x] Architecture design and README
 ### Application 
-- [ ] FastAPI application
-- [ ] Dockerfile
+- [x] FastAPI application
+- [x] Dockerfile
 ### Core Infrastructure
-- [ ] Terraform bootstrap module
+- [x] Terraform bootstrap module
 - [ ] Terraform VPC module
 - [ ] Terraform ECR module
 - [ ] Terraform ECS module
