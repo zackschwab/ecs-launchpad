@@ -1,0 +1,2 @@
+# Copy to terraform.tfvars and fill in your ECR image URI
+container_image = "123456789.dkr.ecr.us-east-1.amazonaws.com/ecs-launchpad-test:latest"
