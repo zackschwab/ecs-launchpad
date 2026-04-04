@@ -7,7 +7,8 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 
 ## Key Design Decisions
 - **ECS Fargate**: serverless container runtime, removes the need to manage servers and simplifies scaling
-- **ALB**: provides HTTPS load balancing, simplifies certificate management, and enables health-based routing
+- **ACM + Route53**: TLS certificate automatically provisioned and validated via DNS, HTTP redirected to HTTPS at the ALB
+- **ALB**: layer 7 load balancing across ECS tasks with health-based routing and automatic target deregistration
 - **Modular Terraform**: infrastructure is separated into focused, reusable modules per concern, making infrastructure easier to maintain and extend
 - **Multi-stage Docker build**: drastically reduces image size, separates build dependencies from the runtime image, and reduces attack surface
 - **Separated IAM roles**: task execution role and task role are decoupled. The execution role handles ECS startup concerns, the task role governs what the running application can access at runtime
@@ -24,13 +25,14 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 | Container Registry | AWS ECR |
 | Infrastructure-as-Code | Terraform |
 | CI/CD | GitHub Actions |
-| Networking | AWS VPC, ALB, IGW, VPC Endpoints, Security Groups |
+| Networking | Route53, VPC, ALB, IGW, VPC Endpoints, Security Groups |
 | Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
-| Security | AWS Secrets Manager, AWS IAM |
+| Security | AWS Secrets Manager, IAM, ACM |
 
 ## Getting Started
 ### Prerequisites
 - AWS CLI configured with appropriate permissions
+- Registered domain with a Route53 public hosted zone
 - Terraform >= 1.14.8
 - Docker
 - GitHub repository with the following variables set:
@@ -66,7 +68,7 @@ The `backend_config` output will be needed to configure the remote backend for t
 - [x] Terraform VPC Endpoints module
 - [x] Terraform ECR module
 - [x] Terraform IAM module
-- [ ] Terraform ALB module
+- [x] Terraform ALB module
 - [ ] Terraform ECS module
 - [ ] Terraform CloudWatch module
 ### CI/CD
