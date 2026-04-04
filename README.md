@@ -8,8 +8,9 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 ## Key Design Decisions
 - **ECS Fargate**: serverless container runtime, removes the need to manage servers and simplifies scaling
 - **ALB**: provides HTTPS load balancing, simplifies certificate management, and enables health-based routing
-- **Modular Terraform**: each AWS resource is separated into reusable modules, making infrastructure easier to maintain and extend
+- **Modular Terraform**: infrastructure is separated into focused, reusable modules per concern, making infrastructure easier to maintain and extend
 - **Multi-stage Docker build**: drastically reduces image size, separates build dependencies from the runtime image, and reduces attack surface
+- **Separated IAM roles**: task execution role and task role are decoupled. The execution role handles ECS startup concerns, the task role governs what the running application can access at runtime
 - **CloudWatch Container Insights**: monitors CPU and memory at the task and service level using native AWS tooling
 - **OIDC Federation**: GitHub Actions assumes a scoped IAM role via short-lived token, removing the need to store credentials
 
@@ -25,7 +26,7 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 | CI/CD | GitHub Actions |
 | Networking | AWS VPC, ALB, IGW, VPC Endpoints, Security Groups |
 | Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
-| Secrets | AWS Secrets Manager |
+| Security | AWS Secrets Manager, AWS IAM |
 
 ## Getting Started
 ### Prerequisites
@@ -62,10 +63,11 @@ The `backend_config` output will be needed to configure the remote backend for t
 ### Core Infrastructure
 - [x] Terraform bootstrap module
 - [x] Terraform VPC module
-- [ ] Terraform VPC Endpoints module
-- [ ] Terraform ECR module
-- [ ] Terraform ECS module
+- [x] Terraform VPC Endpoints module
+- [x] Terraform ECR module
+- [x] Terraform IAM module
 - [ ] Terraform ALB module
+- [ ] Terraform ECS module
 - [ ] Terraform CloudWatch module
 ### CI/CD
 - [ ] GitHub Actions CI/CD Pipeline
