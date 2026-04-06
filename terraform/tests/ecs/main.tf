@@ -46,13 +46,6 @@ module "iam" {
   secret_arns = [aws_secretsmanager_secret.placeholder.arn]
 }
 
-# Create the ECR registry prior to testing ECS, manually upload the application image, add it to .tfvars
-# module "ecr" {
-#   source       = "../../modules/ecr"
-#   project_name = "ecs-launchpad"
-#   environment  = "test"
-# }
-
 module "ecs" {
   source       = "../../modules/ecs"
   project_name = "ecs-launchpad"
