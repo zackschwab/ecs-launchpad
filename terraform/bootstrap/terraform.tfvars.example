@@ -1,0 +1,8 @@
+project_name = "ecs-launchpad"
+environment  = "dev"
+aws_region   = "us-east-1"
+module_name  = "bootstrap"
+
+tags = {
+  Repository = "ecs-launchpad"
+}
