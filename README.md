@@ -29,6 +29,23 @@ My goal for this project is to apply the knowledge gained from my Platform Engin
 | Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
 | Security | AWS Secrets Manager, IAM, ACM |
 
+## Terraform Module Architecture
+
+The infrastructure is organized into reusable Terraform modules, each scoped to a single concern. This modular design enables independent testing, easier maintenance, and reuse across environments.
+
+```
+terraform/
+├── bootstrap         # Remote state (S3 + DynamoDB)
+├── modules
+│   ├── vpc           # Networking foundation (subnets, routing, IGW)
+│   ├── vpc_endpoints # Private AWS service access (no NAT required)
+│   ├── ecr           # Container registry
+│   ├── iam           # Least-privilege roles for ECS tasks
+│   ├── alb           # Ingress (TLS, DNS, routing)
+│   └── ecs           # Application runtime (cluster, service, tasks)
+└── tests             # Integration tests per module
+```
+
 ## Getting Started
 ### Prerequisites
 - AWS CLI configured with appropriate permissions
@@ -55,6 +72,9 @@ terraform apply tfplan
 
 The `backend_config` output will be needed to configure the remote backend for the infrastructure modules.
 
+## Integration Tests
+Each module has an integration test harness under `terraform/tests/`. See `tests/ecs/README.md` for prerequisites and instructions for the full stack test.
+
 ## Roadmap
 
 ### Planning stage
@@ -69,8 +89,11 @@ The `backend_config` output will be needed to configure the remote backend for t
 - [x] Terraform ECR module
 - [x] Terraform IAM module
 - [x] Terraform ALB module
-- [ ] Terraform ECS module
-- [ ] Terraform CloudWatch module
+- [x] Terraform ECS module
+### Observability
+- [ ] CloudWatch Logs, Metrics, and Alarms
+- [ ] CloudWatch Dashboard
+- [ ] SNS Notifications
 ### CI/CD
 - [ ] GitHub Actions CI/CD Pipeline
 ### Deployment
@@ -81,6 +104,5 @@ The `backend_config` output will be needed to configure the remote backend for t
 - [ ] Add an RDS module for persistent storage
 - [ ] Add auto-scaling policies based on ALB request count
 - [ ] Implement AWS WAF on the ALB for basic DDoS protection
-- [ ] Add SNS notifications for CloudWatch alarms
 - [ ] Blue/green deployments with CodeDeploy
 - [ ] VPC Flow Logs for network traffic auditing
