@@ -42,7 +42,9 @@ terraform/
 │   ├── ecr           # Container registry
 │   ├── iam           # Least-privilege roles for ECS tasks
 │   ├── alb           # Ingress (TLS, DNS, routing)
-│   └── ecs           # Application runtime (cluster, service, tasks)
+│   ├── ecs           # Application runtime (cluster, service, tasks)
+│   ├── cloudwatch    # Runtime observability (alarms, dashboards)
+│   └── sns           # Email and text notifications for critical alarms 
 └── tests             # Integration tests per module
 ```
 
@@ -73,7 +75,7 @@ terraform apply tfplan
 The `backend_config` output will be needed to configure the remote backend for the infrastructure modules.
 
 ## Integration Tests
-Each module has an integration test harness under `terraform/tests/`. See `tests/ecs/README.md` for prerequisites and instructions for the full stack test.
+Each module has an integration test harness under `terraform/tests/`. For end to end validation, use the `terraform/tests/fullstack`, see its README for prerequisites and instructions. 
 
 ## Roadmap
 
@@ -91,9 +93,9 @@ Each module has an integration test harness under `terraform/tests/`. See `tests
 - [x] Terraform ALB module
 - [x] Terraform ECS module
 ### Observability
-- [ ] CloudWatch Logs, Metrics, and Alarms
-- [ ] CloudWatch Dashboard
-- [ ] SNS Notifications
+- [x] CloudWatch Logs, Metrics, and Alarms
+- [x] CloudWatch Dashboard
+- [x] SNS Notifications
 ### CI/CD
 - [ ] GitHub Actions CI/CD Pipeline
 ### Deployment
