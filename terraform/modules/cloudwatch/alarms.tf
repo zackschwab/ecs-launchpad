@@ -68,6 +68,10 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   threshold           = var.error_5xx_threshold
   treat_missing_data  = "notBreaching"
 
+  # Notify if an SNS topic is configured
+  alarm_actions = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
+
   dimensions = {
     LoadBalancer = var.alb_arn_suffix
   }
@@ -88,6 +92,10 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts" {
   statistic           = "Minimum"
   threshold           = 1
   treat_missing_data  = "breaching"
+
+  # Notify if an SNS topic is configured
+  alarm_actions = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != "" ? [var.sns_topic_arn] : []
 
   dimensions = {
     LoadBalancer = var.alb_arn_suffix

@@ -51,3 +51,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "sns_topic_arn" {
+  description = "ARN of the SNS topic to notify on critical alarm state changes. If empty, no notifications are sent"
+  type        = string
+  default     = ""
+}
