@@ -30,8 +30,8 @@ module "alb" {
   vpc_id            = module.vpc.vpc_id
   vpc_cidr          = module.vpc.vpc_cidr_block
   public_subnet_ids = module.vpc.public_subnet_ids
-  domain_name       = "zackschwab.dev"
-  subdomain         = "api.zackschwab.dev"
+  domain_name       = var.domain_name
+  subdomain         = var.subdomain
 }
 
 resource "aws_secretsmanager_secret" "app" {
