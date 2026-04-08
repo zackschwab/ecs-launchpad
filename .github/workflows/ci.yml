@@ -1,0 +1,69 @@
+# CI runs on every pull request to main
+# Validates Terraform formatting and configuration against real AWS infrastructure
+# and smoke tests the Docker image locally before any code is merged
+
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Required for OIDC authentication
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Fails the pipeline if any .tf files arent properly formatted
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: terraform
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+        working-directory: terraform
+
+  # For now we are locally testing the docker image
+  # In future improvements, we will test this in an AWS staging environment
+  docker:
+    name: Docker Build and Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ecs-launchpad:ci .
+
+      - name: Smoke test, verify /health endpoint
+        run: |
+          docker run -d --name app -p 8000:8000 ecs-launchpad:ci
+          sleep 5
+          curl --fail http://localhost:8000/health
+          docker stop app
+  

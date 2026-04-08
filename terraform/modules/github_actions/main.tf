@@ -58,7 +58,7 @@ resource "aws_iam_role" "github_actions" {
   tags = local.common_tags
 }
 
-# Inline policy granting the least privilege needed for CI/CD
+# Inline policy granting the least privilege needed for continuous deployments
 # ECR: authentication and image push
 # ECS: service update to trigger a new deployment
 resource "aws_iam_role_policy" "github_actions" {
@@ -113,6 +113,72 @@ resource "aws_iam_role_policy" "github_actions" {
         Effect   = "Allow"
         Action   = "iam:PassRole"
         Resource = var.ecs_execution_role_arn
+      }
+    ]
+  })
+}
+
+# Scoped read only policy for terraform plan in CI
+# Uses explicit actions per service rather than ReadOnlyAccess to follow least privilege
+resource "aws_iam_role_policy" "github_actions_plan" {
+  name = "${var.project_name}-${var.environment}-github-actions-plan-policy"
+  role = aws_iam_role.github_actions.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowTerraformPlanRead"
+        Effect = "Allow"
+        Action = [
+          # STS: required for data.aws_caller_identity
+          "sts:GetCallerIdentity",
+
+          # EC2: VPC, subnets, security groups, route tables, endpoints
+          "ec2:Describe*",
+
+          # ECR
+          "ecr:Describe*",
+          "ecr:List*",
+          "ecr:GetRepositoryPolicy",
+
+          # ECS
+          "ecs:Describe*",
+          "ecs:List*",
+
+          # IAM
+          "iam:Get*",
+          "iam:List*",
+
+          # ALB
+          "elasticloadbalancing:Describe*",
+
+          # CloudWatch
+          "cloudwatch:Describe*",
+          "cloudwatch:List*",
+          "cloudwatch:Get*",
+
+          # CloudWatch Logs
+          "logs:Describe*",
+          "logs:List*",
+
+          # SNS
+          "sns:Get*",
+          "sns:List*",
+
+          # Secrets Manager
+          "secretsmanager:Describe*",
+          "secretsmanager:List*",
+
+          # Route53
+          "route53:Get*",
+          "route53:List*",
+
+          # ACM
+          "acm:Describe*",
+          "acm:List*"
+        ]
+        Resource = "*"
       }
     ]
   })

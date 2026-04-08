@@ -44,7 +44,8 @@ terraform/
 │   ├── alb           # Ingress (TLS, DNS, routing)
 │   ├── ecs           # Application runtime (cluster, service, tasks)
 │   ├── cloudwatch    # Runtime observability (alarms, dashboards)
-│   └── sns           # Email and text notifications for critical alarms 
+│   ├── sns           # Email and text notifications for critical alarms 
+│   └── github_actions  # OIDC provider and IAM roles for CI/CD
 └── tests             # Integration tests per module
 ```
 
@@ -54,9 +55,6 @@ terraform/
 - Registered domain with a Route53 public hosted zone
 - Terraform >= 1.14.8
 - Docker
-- GitHub repository with the following variables set:
-  - `AWS_ROLE_ARN`
-  - `AWS_REGION`
 
 ## Deployment 
 ### 1. Bootstrap Remote State (one time setup)
@@ -73,6 +71,15 @@ terraform apply tfplan
 ```
 
 The `backend_config` output will be needed to configure the remote backend for the infrastructure modules.
+
+
+### 2. Deploy GitHub Actions OIDC (one time setup)
+
+After bootstrapping, deploy the `github_actions` module and set the required repository variables. See `terraform/tests/github_actions/README.md` for instructions.
+
+
+## CI/CD
+Pull requests to `main` trigger the CI workflow which perform Terraform validation and a local Docker smoke test. Merging to `main` or pushing a version tag triggers the CD workflow, which builds and pushes the image to ECR and deploys to ECS.
 
 ## Integration Tests
 Each module has an integration test harness under `terraform/tests/`. For end to end validation, use the `terraform/tests/fullstack`, see its README for prerequisites and instructions. 
@@ -97,7 +104,7 @@ Each module has an integration test harness under `terraform/tests/`. For end to
 - [x] CloudWatch Dashboard
 - [x] SNS Notifications
 ### CI/CD
-- [ ] GitHub Actions CI/CD Pipeline
+- [x] GitHub Actions CI/CD Pipeline
 ### Deployment
 - [ ] Live deployment
 
@@ -106,5 +113,6 @@ Each module has an integration test harness under `terraform/tests/`. For end to
 - [ ] Add an RDS module for persistent storage
 - [ ] Add auto-scaling policies based on ALB request count
 - [ ] Implement AWS WAF on the ALB for basic DDoS protection
+- [ ] Staging environment with automated promotion pipeline from staging to production
 - [ ] Blue/green deployments with CodeDeploy
 - [ ] VPC Flow Logs for network traffic auditing
