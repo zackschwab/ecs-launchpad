@@ -43,9 +43,10 @@ jobs:
         run: terraform validate
         working-directory: terraform
 
-      - name: Terraform Plan
-        run: terraform plan -no-color
-        working-directory: terraform
+      # This will be used in the live deployment branch to verify our root module
+      # - name: Terraform Plan
+      #   run: terraform plan -no-color
+      #   working-directory: terraform
 
   # For now we are locally testing the docker image
   # In future improvements, we will test this in an AWS staging environment

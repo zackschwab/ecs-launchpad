@@ -4,11 +4,15 @@
 name: CD
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+  # Temporary manual trigger until live deployment branch is implemented
+  workflow_dispatch: 
+
+  # push:
+    # CD should only run after live deployment branch
+    # branches:
+    #   - main
+    # tags:
+    #   - 'v*'
 
 jobs:
   deploy:
