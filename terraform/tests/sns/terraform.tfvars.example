@@ -1,0 +1,2 @@
+email_subscriptions = ["email@example.com"]
+sms_subscriptions   = ["+12222222222"]

@@ -1,2 +1,4 @@
 # Copy to terraform.tfvars and fill in your ECR image URI
 container_image = "<account_id>.dkr.ecr.us-east-1.amazonaws.com/ecs-launchpad-test:latest"
+domain_name         = "yourdomain.com"
+subdomain           = "api.yourdomain.com"

@@ -1,3 +1,5 @@
+# Deploy all modules together to validate wiring and functionality
+# Destroy this environment to avoid incurring charges
 provider "aws" {
   region = "us-east-1"
 }
@@ -32,10 +34,14 @@ module "alb" {
   subdomain         = var.subdomain
 }
 
-# Placeholder secret for the IAM module
-resource "aws_secretsmanager_secret" "placeholder" {
-  name                    = "ecs-launchpad/test/placeholder"
+resource "aws_secretsmanager_secret" "app" {
+  name                    = "ecs-launchpad/test/app"
   recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "app" {
+  secret_id     = aws_secretsmanager_secret.app.id
+  secret_string = jsonencode({ placeholder = "test" })
 }
 
 module "iam" {
@@ -43,7 +49,7 @@ module "iam" {
   project_name = "ecs-launchpad"
   environment  = "test"
 
-  secret_arns = [aws_secretsmanager_secret.placeholder.arn]
+  secret_arns = [aws_secretsmanager_secret.app.arn]
 }
 
 module "ecs" {
@@ -59,30 +65,49 @@ module "ecs" {
   target_group_arn      = module.alb.target_group_arn
   execution_role_arn    = module.iam.execution_role_arn
   task_role_arn         = module.iam.task_role_arn
-  container_image = var.container_image
+  container_image       = var.container_image
 
   secrets = {
-    PLACEHOLDER_SECRET = aws_secretsmanager_secret.placeholder.arn
+    APP_SECRET = aws_secretsmanager_secret.app.arn
   }
 }
 
-resource "aws_secretsmanager_secret_version" "placeholder" {
-  secret_id     = aws_secretsmanager_secret.placeholder.id
-  secret_string = jsonencode({ placeholder = "test" })
+module "sns" {
+  source       = "../../modules/sns"
+  project_name = "ecs-launchpad"
+  environment  = "test"
+
+  email_subscriptions = var.email_subscriptions
+}
+
+module "cloudwatch" {
+  source       = "../../modules/cloudwatch"
+  project_name = "ecs-launchpad"
+  environment  = "test"
+
+  cluster_name            = module.ecs.cluster_name
+  service_name            = module.ecs.service_name
+  alb_arn_suffix          = module.alb.alb_arn_suffix
+  target_group_arn_suffix = module.alb.target_group_arn_suffix
+  sns_topic_arn           = module.sns.topic_arn
+}
+
+output "alb_dns_name" {
+  value = module.alb.alb_dns_name
 }
 
 output "cluster_name" {
   value = module.ecs.cluster_name
 }
 
-output "service_name" {
-  value = module.ecs.service_name
-}
-
-output "ecs_security_group_id" {
-  value = module.ecs.ecs_security_group_id
-}
-
 output "log_group_name" {
   value = module.ecs.log_group_name
+}
+
+output "dashboard_name" {
+  value = module.cloudwatch.dashboard_name
+}
+
+output "sns_topic_arn" {
+  value = module.sns.topic_arn
 }

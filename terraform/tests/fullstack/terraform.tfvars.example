@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars and fill in your values
+container_image     = "<account_id>.dkr.ecr.us-east-1.amazonaws.com/ecs-launchpad-test:latest"
+email_subscriptions = ["email@example.com"]
+domain_name         = "yourdomain.com"
+subdomain           = "api.yourdomain.com"
