@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and fill in your values
+github_repository      = "your-github-username/ecs-launchpad"
+ecr_repository_arn     = "arn:aws:ecr:us-east-1:<account_id>:repository/ecs-launchpad-test"
+ecs_cluster_name       = "ecs-launchpad-test"
+ecs_service_name       = "ecs-launchpad-test"
+ecs_execution_role_arn = "arn:aws:iam::<account_id>:role/ecs-launchpad-test-ecs-execution-role"
