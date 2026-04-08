@@ -18,3 +18,20 @@ variable "subdomain" {
   description = "Full subdomain to point at the ALB"
   type        = string
 }
+
+variable "project_name" {
+  description = "Project name used across all modules"
+  type        = string
+  default     = "ecs-launchpad"
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+  default     = "test"
+}
+variable "aws_region" {
+  description = "AWS region to deploy into"
+  type        = string
+  default     = "us-east-1"
+}
