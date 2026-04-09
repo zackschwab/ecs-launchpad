@@ -1,18 +1,14 @@
-locals {
-  name_prefix = "${var.project_name}-${var.environment}"
-}
-
 # Use S3 as a remote state bucket
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${local.name_prefix}-terraform-state"
+  bucket = "${var.project_name}-terraform-state"
 
   # Prevent accidental destruction of state
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = merge(var.tags, {
-    Name = "${local.name_prefix}-terraform-state"
+    Name = "${var.project_name}-terraform-state"
   })
 }
 
@@ -70,28 +66,5 @@ resource "aws_s3_bucket_policy" "terraform_state" {
         }
       }
     ]
-  })
-}
-
-# Use DynamoDB as a state locking table 
-resource "aws_dynamodb_table" "terraform_locks" {
-  name     = "${local.name_prefix}-terraform-locks"
-  hash_key = "LockID"
-
-  # Pay per request is ideal for the low traffic and unpredictable workloads
-  billing_mode = "PAY_PER_REQUEST"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-
-  # Protect lock table from accidental deletion
-  lifecycle {
-    prevent_destroy = true
-  }
-
-  tags = merge(var.tags, {
-    Name = "${local.name_prefix}-terraform-locks"
   })
 }
