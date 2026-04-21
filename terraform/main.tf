@@ -105,4 +105,5 @@ module "github_actions" {
   ecs_cluster_name       = module.ecs.cluster_name
   ecs_service_name       = module.ecs.service_name
   ecs_execution_role_arn = module.iam.execution_role_arn
+  ecs_task_role_arn      = module.iam.task_role_arn
 }

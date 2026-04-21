@@ -9,8 +9,13 @@ output "alb_dns_name" {
 }
 
 output "ecr_repository_url" {
-  description = "ECR repository URL — used to push images for deployment"
+  description = "ECR repository URL, used to push images for deployment"
   value       = module.ecr.repository_url
+}
+
+output "ecr_repository_name" {
+  description = "ECR repository name, set as ECR_REPOSITORY in repository variables"
+  value       = module.ecr.repository_name
 }
 
 output "ecs_cluster_name" {
@@ -23,8 +28,18 @@ output "ecs_service_name" {
   value       = module.ecs.service_name
 }
 
+output "ecs_task_definition_family" {
+  description = "ECS task definition family, set as ECS_TASK_DEFINITION in repository variables"
+  value       = module.ecs.task_definition_family
+}
+
+output "container_name" {
+  description = "Container name, set as CONTAINER_NAME in repository variables"
+  value       = module.ecs.container_name
+}
+
 output "github_actions_role_arn" {
-  description = "ARN of the GitHub Actions IAM role — set as AWS_ROLE_ARN in repository variables"
+  description = "ARN of the GitHub Actions IAM role, set as AWS_ROLE_ARN in repository variables"
   value       = module.github_actions.role_arn
 }
 

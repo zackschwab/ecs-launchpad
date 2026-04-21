@@ -32,3 +32,13 @@ output "log_group_arn" {
   description = "ARN of the CloudWatch log group, used to scope IAM policies"
   value       = aws_cloudwatch_log_group.this.arn
 }
+
+output "task_definition_family" {
+  description = "ECS task definition family name"
+  value       = aws_ecs_task_definition.this.family
+}
+
+output "container_name" {
+  description = "Container name used in the task definition"
+  value       = var.project_name
+}

@@ -109,10 +109,13 @@ resource "aws_iam_role_policy" "github_actions" {
         ]
       },
       {
-        Sid      = "AllowPassExecutionRole"
-        Effect   = "Allow"
-        Action   = "iam:PassRole"
-        Resource = var.ecs_execution_role_arn
+        Sid    = "AllowPassExecutionRole"
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          var.ecs_execution_role_arn,
+          var.ecs_task_role_arn
+        ]
       }
     ]
   })
@@ -141,6 +144,7 @@ resource "aws_iam_role_policy" "github_actions_plan" {
           "ecr:Describe*",
           "ecr:List*",
           "ecr:GetRepositoryPolicy",
+          "ecr:GetLifecyclePolicy",
 
           # ECS
           "ecs:Describe*",
@@ -169,6 +173,8 @@ resource "aws_iam_role_policy" "github_actions_plan" {
           # Secrets Manager
           "secretsmanager:Describe*",
           "secretsmanager:List*",
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:GetSecretValue",
 
           # Route53
           "route53:Get*",
@@ -176,7 +182,13 @@ resource "aws_iam_role_policy" "github_actions_plan" {
 
           # ACM
           "acm:Describe*",
-          "acm:List*"
+          "acm:List*",
+
+          # S3 for terraform remote state
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
         ]
         Resource = "*"
       }
