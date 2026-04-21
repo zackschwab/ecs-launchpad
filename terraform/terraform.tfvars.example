@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars and fill in your values
+# Use a placeholder image for the initial deployment, then push your real image to ECR
+container_image = "public.ecr.aws/nginx/nginx:latest"
+
+# Required overrides
+domain_name     = "zackschwab.dev"
+subdomain       = "api.zackschwab.dev"
+github_repository = "zackschwab/ecs-launchpad"
+
+# Optional Overrides
+aws_region      = "us-east-1"
+project_name    = "ecs-launchpad"
+environment     = "prod"
+desired_count   = 1
