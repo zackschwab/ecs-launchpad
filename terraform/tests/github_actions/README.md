@@ -28,6 +28,7 @@ Set the following variables in your GitHub repository under Settings > Secrets a
 | `ECS_SERVICE` | `ecs-launchpad-test` |
 | `ECS_TASK_DEFINITION` | `ecs-launchpad-test` |
 | `CONTAINER_NAME` | `ecs-launchpad` |
+| `STATE_BUCKET_NAME` | `ecs-launchpad-terraform-state` |
 
 > [!NOTE]
 > `AWS_ROLE_ARN` and `AWS_REGION` are sufficient to run the CI workflow. The remaining variables are only required for the CD workflow.

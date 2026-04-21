@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     
-    # Default app settings will be used if pydantic doesn't find these variables
-    app_version: str = "0.1.0"
+    # Injected at deploy time by the CD pipeline via the git tag or commit SHA
+    app_version: str = "unknown"
     environment: str = "development"
 
     class Config:

@@ -8,6 +8,7 @@ venv/
 .terraform/
 *.tfstate
 *.tfstate.backup
+backend.hcl
 tfplan
 
 # Ignore tfvars by default, but envs are safe to commit

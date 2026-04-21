@@ -33,6 +33,11 @@ variable "ecs_execution_role_arn" {
   type        = string
 }
 
+variable "ecs_task_role_arn" {
+  description = "ARN of the ECS task role. Required for GitHub Actions to pass the role when registering a new task definition"
+  type        = string
+}
+
 variable "tags" {
   description = "Additional tags to merge onto all resources"
   type        = map(string)

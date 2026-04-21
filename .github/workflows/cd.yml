@@ -1,36 +1,38 @@
-# Tags version releases (v*) with the tag name for traceability
-# Tags branch pushes with the commit SHA to identify deployments
+# Deploys on version tags (v*) for production releases
 
 name: CD
 
 on:
-  # Temporary manual trigger until live deployment branch is implemented
-  workflow_dispatch: 
-
-  # push:
-    # CD should only run after live deployment branch
-    # branches:
-    #   - main
-    # tags:
-    #   - 'v*'
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   deploy:
     name: Build, Push, and Deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       id-token: write   # Required for OIDC authentication
       contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Verify tag is on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "Tag must be on main branch"
+            exit 1
+          fi
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -38,12 +40,7 @@ jobs:
 
       - name: Set image tag
         id: image-tag
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=sha-${{ github.sha }}" >> $GITHUB_OUTPUT
-          fi
+        run: echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
       - name: Build, tag, and push image to ECR
         id: build-image
@@ -56,12 +53,12 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      # Downloads the existing task definition to preserve all configuration
       - name: Download current task definition
         run: |
           aws ecs describe-task-definition \
             --task-definition ${{ vars.ECS_TASK_DEFINITION }} \
             --query taskDefinition \
+            | jq 'del(.taskDefinitionArn, .revision, .status, .registeredAt, .registeredBy, .compatibilities, .requiresAttributes)' \
             > task-definition.json
 
       # Only updates the container image to avoid duplicating the full task definition in CI
@@ -72,6 +69,8 @@ jobs:
           task-definition: task-definition.json
           container-name: ${{ vars.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
+          environment-variables: |
+            APP_VERSION=${{ steps.image-tag.outputs.tag }}
 
       # Deploy to ECS and enable wait-for-service-stability to fail the pipeline if
       # any new tasks don't pass health checks

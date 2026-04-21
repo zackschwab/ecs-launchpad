@@ -1,0 +1,9 @@
+# Copy to backend.hcl and fill in your bootstrap outputs
+bucket         = "your-terraform-state-bucket"
+
+# Replace <module> if running root module
+key            = "prod/terraform.tfstate"
+
+region         = "us-east-1"
+use_lockfile   = true
+encrypt        = true

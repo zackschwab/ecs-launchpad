@@ -127,6 +127,17 @@ resource "aws_ecs_task_definition" "this" {
         }
       ]
 
+      environment = [
+        {
+          name  = "ENVIRONMENT"
+          value = var.environment
+        },
+        {
+          name  = "APP_VERSION"
+          value = "unknown"
+        }
+      ]
+
       # Inject secrets from Secrets Manager as environment variables
       # ECS fetches these before the container starts using the execution role
       secrets = [
@@ -181,7 +192,7 @@ resource "aws_ecs_service" "this" {
   # Ignore external changes to desired_count to allow manual scaling without
   # Terraform reverting the count on the next apply
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [desired_count, task_definition]
   }
 
   tags = local.common_tags
